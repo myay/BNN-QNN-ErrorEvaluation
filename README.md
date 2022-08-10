@@ -15,7 +15,7 @@ After successful installation of all kernels, run the binarization/quantization-
 
 and for QNNs using
 
-```python3 run_fashion_quantized_fi.py --batch-size=256 --epochs=10 --lr=0.0001 --step-size=5 --gamma=0.5 --test-error```.
+TODO
 
 The code is an extension based on the MNIST example in https://github.com/pytorch/examples/tree/master/mnist.
 
