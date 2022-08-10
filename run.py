@@ -17,7 +17,7 @@ from Utils import Scale, Clippy, set_layer_mode, parse_args, dump_exp_data, crea
 
 from QuantizedNN import QuantizedLinear, QuantizedConv2d, QuantizedActivation
 
-from Models import VGG3
+from Models import VGG3, VGG7
 
 from Traintest_Utils import train, test, test_error
 
