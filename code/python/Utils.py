@@ -53,6 +53,13 @@ def set_layer_mode(model, mode):
                 layer.eval = False
 
 def parse_args(parser):
+    parser.add_argument('--model', type=str, default=None,
+                    help='VGG3/VGG7')
+    parser.add_argument('--dataset', type=str, default=None,
+                    help='MNIST/FMNIST/QMNIST/SVHN/CIFAR10')
+    parser.add_argument('--train-model', type=int, default=None, help='Whether to train a model')
+    parser.add_argument('--load-model-path', type=str, default=None, help='Specify path to model if it should be loaded')
+    parser.add_argument('--gpu-num', type=int, default=0, metavar='N', help='Specify the GPU on which the training should be performed')
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
@@ -82,14 +89,14 @@ def parse_args(parser):
 def dump_exp_data(model, args, all_accuracies):
     to_dump = dict()
     to_dump["model"] = model.name
-    to_dump["method"] = model.method
+    # to_dump["method"] = model.method
     to_dump["batchsize"] = args.batch_size
     to_dump["epochs"] = args.epochs
     to_dump["learning_rate"] = args.lr
     to_dump["gamma"] = args.gamma
     to_dump["stepsize"] = args.step_size
-    to_dump["traincrit"] = model.traincriterion.name
-    to_dump["testcrit"] = model.testcriterion.name
+    # to_dump["traincrit"] = model.traincriterion.name
+    # to_dump["testcrit"] = model.testcriterion.name
     to_dump["test_error"] = all_accuracies
     return to_dump
 

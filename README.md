@@ -11,7 +11,7 @@ Then, to install the CUDA-kernels, go to the folder ```code/cuda/``` and run
 
 After successful installation of all kernels, run the binarization/quantization-aware training with error injection for BNNs using
 
-```python3 run_fashion_binarized_fi.py --batch-size=256 --epochs=10 --lr=0.001 --step-size=2 --gamma=0.5 --test-error```,
+```python3 run.py --model=VGG3 --dataset=FMNIST --batch-size=256 --epochs=5 --lr=0.001 --step-size=2 --gamma=0.5 --train-model=1```,
 
 and for QNNs using
 
