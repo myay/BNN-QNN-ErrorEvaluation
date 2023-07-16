@@ -85,7 +85,7 @@ class QuantizedLinear(nn.Linear):
             check_q = check_quantization(self.quantize_train,
              self.quantize_eval, self.training)
             if (check_q == True):
-                quantize_weight = quantize(self.weight, self.quantization)
+                quantized_weight = quantize(self.weight, self.quantization)
             else:
                 quantized_weight = self.weight
             # quantized_weight = quantize(self.weight, self.quantization)

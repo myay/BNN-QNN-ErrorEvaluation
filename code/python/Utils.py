@@ -6,43 +6,51 @@ from datetime import datetime
 import json
 
 from QuantizedNN import QuantizedLinear, QuantizedConv2d, QuantizedActivation
+from Models import VGG3, VGG7, ResNet #, VGG3_BNN, VGG3_QI2, VGG3_QI4, VGG3_QI8, VGG7_BNN, VGG7_QI2, VGG7_QI4, VGG7_QI8, ResNet_BNN, ResNet_QI2, ResNet_QI4, ResNet_QI8
 
-def binary_hingeloss(yhat, y, b=128):
-    #print("yhat", yhat.mean(dim=1))
-    #print("y", y)
-    # print("BINHINGE")
-    y_enc = 2 * torch.nn.functional.one_hot(y, yhat.shape[-1]) - 1.0
-    #print("y_enc", y_enc)
-    l = (b - y_enc * yhat).clamp(min=0)
-    #print(l)
-    return l.mean(dim=1) / b
+# def get_model(args):
+#     nn_model = None
+    
+#     if args.model == ("VGG3_BNN" or None):
+#         nn_model = VGG3_BNN
+#     if args.model == "VGG3_QI2":
+#         nn_model = VGG3_QI2
+#     if args.model == "VGG3_QI4":
+#         nn_model = VGG3_QI4
+#     if args.model == "VGG3_QI8":
+#         nn_model = VGG3_QI8
+#     if args.model == "VGG7_BNN":
+#         nn_model = VGG7_BNN
+#     if args.model == "VGG7_QI2":
+#         nn_model = VGG7_QI2
+#     if args.model == "VGG7_QI4":
+#         nn_model = VGG7_QI4
+#     if args.model == "VGG7_QI8":
+#         nn_model = VGG7_QI8
+#     if args.model == "ResNet_BNN":
+#         nn_model = ResNet_BNN
+#     if args.model == "ResNet_QI2":
+#         nn_model = ResNet_QI2
+#     if args.model == "ResNet_QI4":
+#         nn_model = ResNet_QI4
+#     if args.model == "ResNet_QI8":
+#         nn_model = ResNet_QI8
+#     else:
+#         nn_model = VGG3_BNN
+#     return nn_model
 
-class Scale(nn.Module):
-    def __init__(self, init_value=1e-3):
-        super().__init__()
-        self.scale = nn.Parameter(torch.FloatTensor([init_value]))
+def get_model(args):
+    nn_model = None
 
-    def forward(self, input):
-        return input * self.scale
-
-class Clippy(torch.optim.Adam):
-    def step(self, closure=None):
-        loss = super(Clippy, self).step(closure=closure)
-        for group in self.param_groups:
-            for p in group['params']:
-                p.data.clamp(-1,1)
-        return loss
-
-class Criterion:
-    def __init__(self, method, name, param=None):
-        self.method = method
-        self.param = param
-        self.name = name
-    def applyCriterion(self, output, target):
-        if self.param is not None:
-            return self.method(output, target, self.param)
-        else:
-            return self.method(output, target)
+    if args.model == "VGG3":
+        nn_model = VGG3
+    if args.model == "VGG7":
+        nn_model = VGG7
+    if args.model == "ResNet":
+        nn_model = ResNet
+    else:
+        nn_model = VGG3
+    return nn_model
 
 def set_layer_mode(model, mode):
     for layer in model.children():
@@ -84,6 +92,8 @@ def parse_args(parser):
                         help='For Saving the current Model')
     parser.add_argument('--test-error', action='store_true', default=False,
                         help='Test accuracy under errors')
+    parser.add_argument('--weight', type=int, default=4, help='Quanization of weight-bits (default: 4)')
+    parser.add_argument('--input', type=int, default=4, help='Quanization of input-bits (default: 4)')
 
 
 def dump_exp_data(model, args, all_accuracies):
@@ -98,6 +108,8 @@ def dump_exp_data(model, args, all_accuracies):
     # to_dump["traincrit"] = model.traincriterion.name
     # to_dump["testcrit"] = model.testcriterion.name
     to_dump["test_error"] = all_accuracies
+    to_dump["weight"] = args.weight
+    to_dump["input"] = args.input
     return to_dump
 
 def create_exp_folder(model):
