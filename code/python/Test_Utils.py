@@ -6,20 +6,7 @@ from datetime import datetime
 import json
 
 from QuantizedNN import QuantizedLinear, QuantizedConv2d, QuantizedActivation
-from Models import VGG3, VGG7, ResNet #, VGG3_BNN, VGG3_QI2, VGG3_QI4, VGG3_QI8, VGG7_BNN, VGG7_QI2, VGG7_QI4, VGG7_QI8, ResNet_BNN, ResNet_QI2, ResNet_QI4, ResNet_QI8
-
-def get_model(args):
-    nn_model = None
-
-    if args.model == "VGG3":
-        nn_model = VGG3
-    if args.model == "VGG7":
-        nn_model = VGG7
-    if args.model == "ResNet":
-        nn_model = ResNet
-    else:
-        nn_model = VGG3
-    return nn_model
+from Test_Models import VGG3_Test_Q, VGG3_Test_B #, VGG3_BNN, VGG3_QI2, VGG3_QI4, VGG3_QI8, VGG7_BNN, VGG7_QI2, VGG7_QI4, VGG7_QI8, ResNet_BNN, ResNet_QI2, ResNet_QI4, ResNet_QI8
 
 def set_layer_mode(model, mode):
     for layer in model.children():
@@ -30,8 +17,6 @@ def set_layer_mode(model, mode):
                 layer.eval = False
 
 def parse_args(parser):
-    parser.add_argument('--model', type=str, default=None,
-                    help='VGG3/VGG7')
     parser.add_argument('--dataset', type=str, default=None,
                     help='MNIST/FMNIST/QMNIST/SVHN/CIFAR10')
     parser.add_argument('--train-model', type=int, default=None, help='Whether to train a model')

@@ -19,6 +19,15 @@ class Quantization1:
         self.method = method
     def applyQuantization(self, input):
         return self.method(input)
+    
+class Quantization2:
+    def __init__(self, method, bits=None, unsign=1):
+        self.method = method
+        self.bits = bits
+        self.unsigned = unsign # 0: use signed, 1: use unsigned
+    def applyQuantization(self, input):
+        return self.method(input,
+         input.min().item(), input.max().item(), self.bits, self.unsigned)
 
 binarizepm1 = Quantization1(binarizePM1.binarize)
 
@@ -40,21 +49,21 @@ class VGG3(nn.Module):
 
         #CNN
         # block 1
-        self.conv1 = QuantizedConv2d(1, 64, kernel_size=3, padding=1, stride=1, quantization=self.weight)
+        self.conv1 = QuantizedConv2d(1, 64, kernel_size=3, padding=1, stride=1, quantization=self.weight, quantize_train=q_train, quantize_eval=q_eval)
         self.bn1 = nn.BatchNorm2d(64)
-        self.qact1 = QuantizedActivation(quantization=self.input)
+        self.qact1 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 2
-        self.conv2 = QuantizedConv2d(64, 64, kernel_size=3, padding=1, stride=1, quantization=self.weight)
+        self.conv2 = QuantizedConv2d(64, 64, kernel_size=3, padding=1, stride=1, quantization=self.weight, quantize_train=q_train, quantize_eval=q_eval)
         self.bn2 = nn.BatchNorm2d(64)
-        self.qact2 = QuantizedActivation(quantization=self.input)
+        self.qact2 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 3
-        self.fc1 = QuantizedLinear(7*7*64, 2048, quantization=self.weight)
+        self.fc1 = QuantizedLinear(7*7*64, 2048, quantization=self.weight, quantize_train=q_train, quantize_eval=q_eval)
         self.bn3 = nn.BatchNorm1d(2048)
-        self.qact3 = QuantizedActivation(quantization=self.input)
+        self.qact3 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
-        self.fc2 = QuantizedLinear(2048, 10, quantization=self.weight)
+        self.fc2 = QuantizedLinear(2048, 10, quantization=self.weight, quantize_train=q_train, quantize_eval=q_eval)
         self.scale = Scale()
 
     def forward(self, x):
@@ -99,41 +108,41 @@ class VGG7(nn.Module):
 
         #CNN
         # block 1
-        self.conv1 = QuantizedConv2d(3, 128, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=1)
+        self.conv1 = QuantizedConv2d(3, 128, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=1, quantize_train=q_train, quantize_eval=q_eval)
         self.bn1 = nn.BatchNorm2d(128)
-        self.qact1 = QuantizedActivation(quantization=self.input)
+        self.qact1 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 2
-        self.conv2 = QuantizedConv2d(128, 128, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=2)
+        self.conv2 = QuantizedConv2d(128, 128, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=2, quantize_train=q_train, quantize_eval=q_eval)
         self.bn2 = nn.BatchNorm2d(128)
-        self.qact2 = QuantizedActivation(quantization=self.input)
+        self.qact2 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 3
-        self.conv3 = QuantizedConv2d(128, 256, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=3)
+        self.conv3 = QuantizedConv2d(128, 256, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=3, quantize_train=q_train, quantize_eval=q_eval)
         self.bn3 = nn.BatchNorm2d(256)
-        self.qact3 = QuantizedActivation(quantization=self.input)
+        self.qact3 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 4
-        self.conv4 = QuantizedConv2d(256, 256, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=4)
+        self.conv4 = QuantizedConv2d(256, 256, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=4, quantize_train=q_train, quantize_eval=q_eval)
         self.bn4 = nn.BatchNorm2d(256)
-        self.qact4 = QuantizedActivation(quantization=self.input)
+        self.qact4 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 5
-        self.conv5 = QuantizedConv2d(256, 512, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=5)
+        self.conv5 = QuantizedConv2d(256, 512, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=5, quantize_train=q_train, quantize_eval=q_eval)
         self.bn5 = nn.BatchNorm2d(512)
-        self.qact5 = QuantizedActivation(quantization=self.input)
+        self.qact5 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 6
-        self.conv6 = QuantizedConv2d(512, 512, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=6)
+        self.conv6 = QuantizedConv2d(512, 512, kernel_size=3, padding=1, stride=1, quantization=self.weight, layerNr=6, quantize_train=q_train, quantize_eval=q_eval)
         self.bn6 = nn.BatchNorm2d(512)
-        self.qact6 = QuantizedActivation(quantization=self.input)
+        self.qact6 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
         # block 7
-        self.fc1 = QuantizedLinear(8192, 1024, quantization=self.weight, layerNr=7)
+        self.fc1 = QuantizedLinear(8192, 1024, quantization=self.weight, layerNr=7, quantize_train=q_train, quantize_eval=q_eval)
         self.bn7 = nn.BatchNorm1d(1024)
-        self.qact7 = QuantizedActivation(quantization=self.input)
+        self.qact7 = QuantizedActivation(quantization=self.input, quantize_train=q_train, quantize_eval=q_eval)
 
-        self.fc2 = QuantizedLinear(1024, 10, quantization=self.weight, layerNr=8)
+        self.fc2 = QuantizedLinear(1024, 10, quantization=self.weight, layerNr=8, quantize_train=q_train, quantize_eval=q_eval)
         self.scale = Scale(init_value=1e-3)
 
     def forward(self, x):
@@ -188,15 +197,7 @@ class VGG7(nn.Module):
         x = self.scale(x)
 
         return x
- 
-class Quantization2:
-    def __init__(self, method, bits=None, unsign=0):
-        self.method = method
-        self.bits = bits
-        self.unsigned = unsign # 0: use signed, 1: use unsigned
-    def applyQuantization(self, input):
-        return self.method(input,
-         input.min().item(), input.max().item(), self.bits, self.unsigned)
+
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -277,53 +278,4 @@ class ResNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
-
-class VGG3_Test(nn.Module):
-    def __init__(self, cel_train, cel_test, quantMethod=None, quantize_train=True, quantize_eval=True):
-        super(VGG3_Test, self).__init__()
-        self.name = "VGG3_Test"
-        self.quantization = quantMethod
-        self.q_train = quantize_train
-        self.q_test = quantize_eval
-        self.traincriterion = cel_train
-        self.testcriterion = cel_test
-
-        self.htanh = nn.Hardtanh()
-        self.conv1 = QuantizedConv2d(1, 64, kernel_size=3, padding=1, stride=1, quantization=self.quantization)
-        self.bn1 = nn.BatchNorm2d(64)
-        self.qact1 = QuantizedActivation(quantization=self.quantization)
-
-        self.conv2 = QuantizedConv2d(64, 64, kernel_size=3, padding=1, stride=1, quantization=self.quantization)
-        self.bn2 = nn.BatchNorm2d(64)
-        self.qact2 = QuantizedActivation(quantization=self.quantization)
-
-        self.fc1 = QuantizedLinear(7*7*64, 2048, quantization=self.quantization)
-        self.bn3 = nn.BatchNorm1d(2048)
-        self.qact3 = QuantizedActivation(quantization=self.quantization)
-
-        self.fc2 = QuantizedLinear(2048, 10, quantization=self.quantization)
-        self.scale = Scale()
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = F.max_pool2d(x, 2)
-        x = self.bn1(x)
-        x = self.htanh(x)
-        x = self.qact1(x)
-
-        x = self.conv2(x)
-        x = F.max_pool2d(x, 2)
-        x = self.bn2(x)
-        x = self.htanh(x)
-        x = self.qact2(x)
-
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = self.bn3(x)
-        x = self.htanh(x)
-        x = self.qact2(x)
-
-        x = self.fc2(x)
-        x = self.scale(x)
-
-        return x
+    
