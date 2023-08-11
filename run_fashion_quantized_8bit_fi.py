@@ -104,7 +104,7 @@ def main():
     nn_model = get_model(args)
 
     if args.model == ("ResNet"):
-       model = nn_model(BasicBlock, [2, 2, 2, 2], cel_train, cel_test, weightBits=q4bit, inputBits=q8bit, quantize_train=q_train, quantize_eval=q_eval).to(device)
+        model = nn_model(BasicBlock, [2, 2, 2, 2], cel_train, cel_test, weightBits=q4bit, inputBits=q8bit, quantize_train=q_train, quantize_eval=q_eval).to(device)
     else:
         model = nn_model(cel_train, cel_test, weightBits=q4bit, inputBits=q8bit, quantize_train=q_train, quantize_eval=q_eval).to(device)
 
